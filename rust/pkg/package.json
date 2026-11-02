@@ -1,0 +1,21 @@
+{
+  "name": "shazam-wasm",
+  "type": "module",
+  "description": "Browser WebAssembly port of shazamio-core without Opus",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tri2820/sweetest"
+  },
+  "files": [
+    "shazam_wasm_bg.wasm",
+    "shazam_wasm.js",
+    "shazam_wasm.d.ts"
+  ],
+  "main": "shazam_wasm.js",
+  "types": "shazam_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
