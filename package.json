@@ -1,0 +1,27 @@
+{
+  "name": "shazam-wasm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser WebAssembly port of shazamio-core without Opus",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sweetest-app/shazam-wasm.git"
+  },
+  "homepage": "https://github.com/sweetest-app/shazam-wasm",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "bun run build:wasm",
+    "build:wasm": "wasm-pack build rust --target web --out-dir pkg --out-name shazam_wasm --release",
+    "build:oracle": "cargo build --release --bin oracle --manifest-path rust/Cargo.toml",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test test/smoke.test.ts",
+    "test:parity": "bun test test/parity.test.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^7.0.2"
+  }
+}

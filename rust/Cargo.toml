@@ -1,0 +1,32 @@
+[package]
+name = "shazam-wasm"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.87"
+license = "MIT"
+description = "Browser WebAssembly port of shazamio-core without Opus"
+repository = "https://github.com/tri2820/sweetest"
+include = ["src/**/*.rs", "LICENSE", "THIRD-PARTY-NOTICES.md", "README.md"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+opus-tests = []
+
+[dependencies]
+base64 = { version = "0.23.1", features = [] }
+byteorder = "1.5.0"
+chfft = "0.3.4"
+crc32fast = "1.5.0"
+rubato = { version = "5.0.1", default-features = false }
+symphonia = { version = "0.6.1", features = ["all"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys = "0.3"
+wasm-bindgen = "0.2"
+
+[[bin]]
+name = "oracle"
+path = "src/bin/oracle.rs"
