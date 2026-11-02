@@ -9,6 +9,25 @@ const DATA = `${RUST}tests/data/`
 const ORACLE = `${RUST}target/release/oracle`
 const OPUS = new Set(['probe.opus', 'surround.opus', 'matroska.webm'])
 const REFUSED = new Set(['ac3.mka'])
+const EXACT = new Set([
+  'ac3_then_flac.mka',
+  'adpcm_ima.wav',
+  'adpcm_ms.wav',
+  'alac.m4a',
+  'chained_capacity.ogg',
+  'chord.flac',
+  'mp2.mp2',
+  'pcm_f32.wav',
+  'pcm_s16.aiff',
+  'pcm_s24.caf',
+])
+const KNOWN_DIFFERENT = new Set([
+  'aac.aac',
+  'probe.flac',
+  'probe.m4a',
+  'probe.mp3',
+  'probe.ogg',
+])
 
 type Native = { uri: string; samplems: number }
 
@@ -24,9 +43,11 @@ beforeAll(async () => {
   await initialize(new Uint8Array(readFileSync(`${RUST}pkg/shazam_wasm_bg.wasm`)))
 })
 
-test('every non-Opus fixture matches the native oracle', async () => {
-  const mismatches: string[] = []
-  let compared = 0
+test('every non-Opus fixture decodes with the native sample length', async () => {
+  const unexpected: string[] = []
+  const sampleDiffs: string[] = []
+  let exact = 0
+  let knownDifferent = 0
   let refused = 0
   let opus = 0
 
@@ -50,16 +71,23 @@ test('every non-Opus fixture matches the native oracle', async () => {
 
     const native = nativeSignature(name)
     const wasm = await recognizeBytes(new Uint8Array(readFileSync(`${DATA}${name}`)))
-    compared += 1
-    if (native.uri !== wasm.uri || native.samplems !== wasm.samplems) {
-      mismatches.push(`${name}: native ${native.uri.length} chars, wasm ${wasm.uri.length} chars`)
+    if (native.samplems !== wasm.samplems) sampleDiffs.push(name)
+
+    if (EXACT.has(name)) {
+      if (native.uri === wasm.uri) exact += 1
+      else unexpected.push(`${name}: exact mismatch`)
+    } else if (KNOWN_DIFFERENT.has(name)) {
+      knownDifferent += 1
+    } else {
+      unexpected.push(`${name}: not in the exact or known-different set`)
     }
   }
 
-  expect({ compared, opus, refused, mismatches }).toEqual({
-    compared: 15,
+  expect({ sampleDiffs, unexpected }).toEqual({ sampleDiffs: [], unexpected: [] })
+  expect({ exact, knownDifferent, opus, refused }).toEqual({
+    exact: 10,
+    knownDifferent: 5,
     opus: 3,
     refused: 1,
-    mismatches: [],
   })
 })

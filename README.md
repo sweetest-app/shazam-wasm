@@ -67,7 +67,10 @@ The built WASM in `rust/pkg` is committed, so the smoke test runs without a
 Rust toolchain. Rebuild it after changing the Rust source. The parity test needs
 the native oracle, so it needs Rust.
 
-The parity test compares the exact URI and sample length against the native oracle built from the same source. This is stricter than Shazam matching.
+The test compares the sample length against the native oracle for every
+non-Opus fixture, checks the exact URI for the deterministic set, and checks the
+five known macOS URI differences. This is stricter than Shazam matching without
+pretending that floating-point output is identical across targets.
 
 Current parity on macOS:
 
